@@ -132,6 +132,35 @@ func (g *GolangGenerator) generateCommand(o *types.ObjectDefinition) (err error)
 	return nil
 }
 func (g *GolangGenerator) generateEnum(o *types.ObjectDefinition) error {
+	/*	type AccessType int
+
+	const (
+		NONE       AccessType = 0
+		READ       AccessType = 1
+		READ_WRITE AccessType = 2
+	)*/
+	g.enumFile.WriteString(fmt.Sprintf("type %s int\n", o.Name))
+	g.enumFile.WriteString("const (\n")
+	isIota := false
+	for i, enum := range *o.Values{
+		if nil == enum.Value{
+			if 0 == i{
+				isIota = true
+				g.enumFile.WriteString(fmt.Sprintf("\t%s %s = iota\n", enum.Name, o.Name))
+			}else{
+				if !isIota{
+					return errors.New("Value " + enum.Name +" has not value but should have" )
+				}
+				g.enumFile.WriteString(fmt.Sprintf("\t%s %s\n", enum.Name, o.Name))
+			}
+		}else{
+			if isIota{
+				return errors.New("Value " + enum.Name +" has a value but shouldn't" )
+			}
+			g.enumFile.WriteString(fmt.Sprintf("\t%s %s = %d\n", enum.Name, o.Name, *enum.Value))
+		}
+	}
+	g.enumFile.WriteString(")\n")
 	return nil
 }
 

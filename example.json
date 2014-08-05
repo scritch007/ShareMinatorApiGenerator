@@ -43,8 +43,7 @@
 		"name": "EnumCommandErrorCode",
 		"values": [
 				{
-					"name": "ERROR_NO_ERROR",
-					"value": 0
+					"name": "ERROR_NO_ERROR"
 				},{
 					"name": "ERROR_MISSING_COMMAND_BODY"
 				},{
