@@ -1,2 +1,4 @@
-Code generator for the APIs of shareminator
+ShareMinatorApiGenerator
+========================
 
+Generator for the ShareMinator project.
