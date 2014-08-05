@@ -1,0 +1,333 @@
+[
+	{
+		"type": "Enum",
+		"name": "AccessType",
+		"values": [
+			{
+				"name": "NONE",
+				"value": 0
+			},{
+				"name": "READ",
+				"value": 1
+			},{
+				"name": "READ_WRITE",
+				"value": 2
+			}
+		]
+	},
+	{
+		"type": "Enum",
+		"name": "EnumStatus",
+		"values":[
+			{
+				"name":"COMMAND_STATUS_DONE",
+	        	"value": 0
+        	},{
+				"name":"COMMAND_STATUS_QUEUED",
+	      		"value": 1
+	      	},{
+				"name":"COMMAND_STATUS_IN_PROGRESS",
+	 			"value": 2
+	 		},{
+				"name":"COMMAND_STATUS_ERROR",
+	       		"value": 3
+	   		},{
+				"name":"COMMAND_STATUS_CANCELLED",
+	   			"value": 4
+	   		}
+
+		]
+	},
+	{
+		"type": "Enum",
+		"name": "EnumCommandErrorCode",
+		"values": [
+				{
+					"name": "ERROR_NO_ERROR",
+					"value": 0
+				},{
+					"name": "ERROR_MISSING_COMMAND_BODY"
+				},{
+					"name": "ERROR_MISSING_PARAMETERS"
+				},{
+					"name": "ERROR_INVALID_PARAMETERS"
+				},{
+					"name": "ERROR_NOT_ALLOWED",
+					"comment": "Should be set when accessing to things that user should be accessing to"
+				},{
+					"name": "ERROR_INVALID_PATH",
+					"comment": "Should be used for everything that refers to a filesystem path"
+				},{
+					"name": "ERROR_FILE_SYSTEM",
+					"comment": "Should be used when an action on the file system fails (listing, removing, stat)"
+				},{
+					"name": "ERROR_SAVING",
+					"comment": "Should only be raised to say saving failed..."
+				},{
+					"name": "ERROR_UNKNOWN",
+					"comment": "Nothing specific there..."
+				}
+		]
+	},
+	{
+		"type": "Object",
+		"name": "StorageItem",
+		"fields": [
+			{
+				"name": "name",
+				"optional": false,
+				"type": "string"
+			},{
+				"name": "isDir",
+				"optional": false,
+				"type": "bool"
+			},{
+				"name": "mDate",
+				"optional": false,
+				"type": "int64"
+			},{
+				"name": "size",
+				"optional": false,
+				"type": "int64"
+			},{
+				"name": "kind",
+				"optional": false,
+				"type": "string",
+				"comment": "this is the extension of the file. value will be folder for a folder"
+			},{
+				"name": "access",
+				"optional": false,
+				"type": "AccessType"
+			},{
+				"name": "share_access",
+				"optional": false,
+				"type": "AccessType"
+			}
+		]
+	},{
+		"type": "Object",
+		"name": "CommandStatus",
+		"fields":[
+			{
+				"name": "status",
+				"type": "EnumStatus",
+				"optional": false
+			},{
+				"name": "progress",
+				"type": "int",
+				"optional": true
+			},{
+				"name": "error_code",
+				"type": "EnumCommandErrorCode",
+				"optional": true
+			}
+
+		]
+	},{
+		"type": "Object",
+		"name": "CommandsSearchParameters",
+		"fields":[
+			{
+				"name": "status",
+				"type": "EnumStatus",
+				"optional": true
+			}
+		]
+	},{
+		"comment": "Browse command structure. This is used for request and response",
+		"type": "Command",
+		"name": "browser.list",
+		"input": [
+			{
+				"name": "path",
+				"optional": false,
+				"type": "string"
+			}
+		],
+		"output": [
+			{
+				"name": "current_item",
+				"type": "StorageItem",
+				"optional": false
+			},{
+				"name": "children",
+				"type": "list",
+				"sub_type": "StorageItem",
+				"optional": false
+			}
+		]
+	},{
+		"comment": "Create Folder command structure. This is used for request and response",
+		"type": "Command",
+		"name": "browser.create_folder",
+		"input": [
+			{
+				"name": "path",
+				"optional": false,
+				"type": "string"
+			}
+		],
+		"output": [
+			{
+				"name": "result",
+				"type": "StorageItem",
+				"optional": false
+			}
+		]
+	},{
+		"name": "browser.delete_item",
+		"type": "Command",
+		"input":[
+			{
+				"name": "path",
+				"type": "string",
+				"optional": false
+			}
+		],
+		"output":[]
+	},{
+		"type": "Command",
+		"name": "browser.download_link",
+		"input": [
+			{
+				"name": "path",
+				"type": "string",
+				"optional": false
+			}
+		],
+		"output": [
+			{
+				"name": "download_link",
+				"type": "string",
+				"optional": false
+			}
+		]
+	},{
+		"type": "Command",
+		"name": "browser.upload_file",
+		"input": [
+			{
+				"name": "path",
+				"type": "string",
+				"optional": false
+			},{
+				"name": "size",
+				"type": "int64",
+				"optional": false
+			}
+		],
+		"output": []
+	},{
+		"name": "EnumShareLinkType",
+		"type": "Enum",
+		"values":[
+			{
+				"name": "EnumShareByKey",
+				"value": 0
+			},{
+				"name": "EnumRestricted",
+				"value": 1
+			},{
+				"name": "EnumAuthenticated",
+				"value": 2
+			}
+		]
+	},{
+		"name": "ShareLink",
+		"type": "Object",
+		"fields":[
+			{
+				"name": "name",
+				"type": "string",
+				"optional": true,
+				"comment": "Name used for displaying the share link if multiple share links available"
+			},{
+				"name": "path",
+				"type": "string",
+				"optional": true,
+				"comment": "Can be empty only if ShareLinkKey is provided"
+			},{
+				"name": "key",
+				"type": "string",
+				"optional": true,
+				"comment": "Can be empty only for a creation or on a Get"
+			},{
+				"name": "user",
+				"type": "string",
+				"optional": false,
+				"comment": "Can be empty only for a creation or on a Get"
+			},{
+				"name": "user_list",
+				"type": "list",
+				"sub_type": "string",
+				"optional": true,
+				"comment": "This is only available for EnumRestricted mode"
+			},{
+				"name": "type",
+				"type": "EnumShareLinkType",
+				"optional": false
+			},{
+				"name": "access",
+				"type": "AccessType",
+				"optional": true,
+				"comment": "What access would people coming with this link have"
+			}
+		]
+	},{
+		"name": "share_link.list",
+		"type": "Command",
+		"input":[
+			{
+				"name": "path",
+				"type": "string"
+			}
+		],
+		"output":[
+			{
+				"name": "share_links",
+				"type": "list",
+				"sub_type": "ShareLink"
+			}
+		]
+	},{
+		"name": "share_link.create",
+		"type": "Command",
+		"input":[
+			{
+				"name": "share_link",
+				"type": "ShareLink"
+			}
+		],
+		"output":[
+			{
+				"name": "share_link",
+				"type": "ShareLink"
+			}
+		]
+	},{
+		"name": "share_link.update",
+		"type": "Command",
+		"input":[
+			{
+				"name": "share_link",
+				"type": "ShareLink"
+			}
+		],
+		"output":[
+			{
+				"name": "share_link",
+				"type": "ShareLink"
+			}
+		]
+	},{
+		"name": "share_link.delete",
+		"type": "Command",
+		"input":[
+			{
+				"name": "key",
+				"type": "string"
+			}
+		],
+		"output":[]
+	}
+]
