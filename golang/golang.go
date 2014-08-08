@@ -4,10 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/scritch007/ShareMinatorApiGenerator/types"
+	"github.com/scritch007/go-tools"
 	"os"
 	"strings"
-	"unicode"
-	"unicode/utf8"
 )
 
 type GolangGenerator struct {
@@ -45,23 +44,6 @@ func NewGolangGenerator(config *types.Config) (*GolangGenerator, error) {
 	return g, nil
 }
 
-func Capitalize(s string) string {
-	if s == "" {
-		return ""
-	}
-	r, n := utf8.DecodeRuneInString(s)
-	return string(unicode.ToUpper(r)) + s[n:]
-}
-
-func JsonToGolang(in *string) (out string) {
-	res := strings.Split(*in, "_")
-	out = ""
-	for _, s := range res {
-		out += Capitalize(s)
-	}
-	return out
-}
-
 func (g *GolangGenerator) generateObject(o *types.ObjectDefinition) error {
 	return generateObject(g.objectFile, o.Name, o.Fields)
 }
@@ -89,7 +71,7 @@ func generateObject(w *os.File, name string, fields *[]types.ObjectField) error 
 		if nil != field.Comment {
 			commentString += "// " + *field.Comment
 		}
-		w.WriteString(fmt.Sprintf("\t%s %s %s %s\n", JsonToGolang(&field.Name), typeString, jsonString, commentString))
+		w.WriteString(fmt.Sprintf("\t%s %s %s %s\n", tools.JsonToGolang(&field.Name), typeString, jsonString, commentString))
 	}
 	w.WriteString("}\n")
 	return nil
@@ -98,9 +80,9 @@ func getCommandName(commandName *string) (out string) {
 	res := strings.Split(*commandName, ".")
 	out = "Command"
 	for _, s := range res {
-		out += Capitalize(s)
+		out += tools.Capitalize(s)
 	}
-	return JsonToGolang(&out)
+	return tools.JsonToGolang(&out)
 }
 
 func (g *GolangGenerator) generateCommand(o *types.ObjectDefinition) (err error) {
@@ -114,7 +96,7 @@ func (g *GolangGenerator) generateCommand(o *types.ObjectDefinition) (err error)
 
 	}
 	if 0 != len(*o.Output) {
-		err = generateObject(g.commandFile, cname+"Output", o.Input)
+		err = generateObject(g.commandFile, cname+"Output", o.Output)
 		if nil != err {
 			return err
 		}
@@ -132,33 +114,27 @@ func (g *GolangGenerator) generateCommand(o *types.ObjectDefinition) (err error)
 	return nil
 }
 func (g *GolangGenerator) generateEnum(o *types.ObjectDefinition) error {
-	/*	type AccessType int
 
-	const (
-		NONE       AccessType = 0
-		READ       AccessType = 1
-		READ_WRITE AccessType = 2
-	)*/
 	g.enumFile.WriteString(fmt.Sprintf("type %s int\n", o.Name))
 	g.enumFile.WriteString("const (\n")
 	isIota := false
-	for i, enum := range *o.Values{
-		if nil == enum.Value{
-			if 0 == i{
+	for i, enum := range *o.Values {
+		var value = i
+		if nil == enum.Value {
+
+			if 0 == i {
 				isIota = true
-				g.enumFile.WriteString(fmt.Sprintf("\t%s %s = iota\n", enum.Name, o.Name))
-			}else{
-				if !isIota{
-					return errors.New("Value " + enum.Name +" has not value but should have" )
+			} else {
+				if !isIota {
+					return errors.New("Value " + enum.Name + " has not value but should have")
 				}
-				g.enumFile.WriteString(fmt.Sprintf("\t%s %s\n", enum.Name, o.Name))
 			}
-		}else{
-			if isIota{
-				return errors.New("Value " + enum.Name +" has a value but shouldn't" )
+		} else {
+			if isIota {
+				return errors.New("Value " + enum.Name + " has a value but shouldn't")
 			}
-			g.enumFile.WriteString(fmt.Sprintf("\t%s %s = %d\n", enum.Name, o.Name, *enum.Value))
 		}
+		g.enumFile.WriteString(fmt.Sprintf("\t%s %s = %d\n", enum.Name, o.Name, value))
 	}
 	g.enumFile.WriteString(")\n")
 	return nil
@@ -182,20 +158,33 @@ func (g *GolangGenerator) GenerateCommands(a *types.APIDefinitions) error {
 				return err
 			}
 		}
-		g.commandFile.WriteString(fmt.Sprintf("type %sCommand struct{\n", JsonToGolang(&category)))
+		g.commandFile.WriteString(fmt.Sprintf("type %sCommand struct{\n", tools.JsonToGolang(&category)))
 		for _, o := range *cmds {
 			_, action, err := o.CommandSplit()
 			if nil != err {
 				return err
 			}
-			g.commandFile.WriteString(fmt.Sprintf("\t%s *%s `json:\"%s,omitempty\"`\n", JsonToGolang(&action), getCommandName(&o.Name), action))
+			g.commandFile.WriteString(fmt.Sprintf("\t%s *%s `json:\"%s,omitempty\"`\n", tools.JsonToGolang(&action), getCommandName(&o.Name), action))
 		}
 		g.commandFile.WriteString("}\n")
 	}
+	g.commandFile.WriteString(fmt.Sprintf("type EnumAction string\n"))
+	g.commandFile.WriteString("const (\n")
+	for category, cmds := range a.Commands {
+		for _, o := range *cmds {
+			_, action, _ := o.CommandSplit()
+			g.commandFile.WriteString(fmt.Sprintf("\tEnum%s%s EnumAction = \"%s\"\n", tools.JsonToGolang(&category), tools.JsonToGolang(&action), o.Name))
+		}
+	}
+	g.commandFile.WriteString(")\n")
 	g.commandFile.WriteString("type Command struct{\n")
-	g.commandFile.WriteString("\tName string `json:\"name\"`\n")
+	g.commandFile.WriteString("\tName EnumAction `json:\"name\"`\n")
+	g.commandFile.WriteString("\tCommandId string `json:\"command_id\"`\n")
+	g.commandFile.WriteString("\tTimeout int64 `json:\"timeout,omitempty\"`\n")
+	g.commandFile.WriteString("\tAuthKey *string `json:\"auth_key,omitempty\"` //Used when calling commands on behalf of a sharedlink\n")
+	g.commandFile.WriteString("\tState CommandStatus `json:\"state\"`\n")
 	for category, _ := range a.Commands {
-		g.commandFile.WriteString(fmt.Sprintf("\t%s *%sCommand `json:\"%s ,omitempty\"`\n", JsonToGolang(&category), JsonToGolang(&category), category))
+		g.commandFile.WriteString(fmt.Sprintf("\t%s *%sCommand `json:\"%s,omitempty\"`\n", tools.JsonToGolang(&category), tools.JsonToGolang(&category), category))
 	}
 	g.commandFile.WriteString("}\n")
 	return nil

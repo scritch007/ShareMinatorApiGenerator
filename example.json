@@ -114,11 +114,11 @@
 			},{
 				"name": "progress",
 				"type": "int",
-				"optional": true
+				"optional": false
 			},{
 				"name": "error_code",
 				"type": "EnumCommandErrorCode",
-				"optional": true
+				"optional": false
 			}
 
 		]
@@ -174,7 +174,7 @@
 			}
 		]
 	},{
-		"name": "browser.delete_item",
+		"name": "browser.delete",
 		"type": "Command",
 		"input":[
 			{

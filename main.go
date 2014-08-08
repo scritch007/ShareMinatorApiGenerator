@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"github.com/scritch007/ShareMinatorApiGenerator/golang"
 	"github.com/scritch007/ShareMinatorApiGenerator/types"
+	"github.com/scritch007/go-tools"
 	"io/ioutil"
+	"os"
 )
 
 func main() {
 	var api types.APIDefinitions
 	var objects []types.ObjectDefinition
+	tools.LogInit(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
 
 	file, err := ioutil.ReadFile("example.json")
 	if err != nil {
