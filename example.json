@@ -251,11 +251,6 @@
 				"optional": true,
 				"comment": "Can be empty only for a creation or on a Get"
 			},{
-				"name": "user",
-				"type": "string",
-				"optional": false,
-				"comment": "Can be empty only for a creation or on a Get"
-			},{
 				"name": "user_list",
 				"type": "list",
 				"sub_type": "string",

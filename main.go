@@ -4,13 +4,32 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/scritch007/ShareMinatorApiGenerator/golang"
+	"github.com/scritch007/ShareMinatorApiGenerator/js"
 	"github.com/scritch007/ShareMinatorApiGenerator/types"
 	"github.com/scritch007/go-tools"
 	"io/ioutil"
 	"os"
+	"flag"
 )
 
 func main() {
+	var help = false
+	var configFile = ""
+	var bGolang = false
+	var bJS = false
+	flag.StringVar(&configFile, "config", "", "Configuration file to use")
+	flag.StringVar(&configFile, "c", "", "Configuration file to use")
+	flag.BoolVar(&help, "help", false, "Display Help")
+	flag.BoolVar(&help, "h", false, "Display Help")
+	flag.BoolVar(&bGolang, "golang", false, "Build Api fo GO")
+	flag.BoolVar(&bJS, "js", false, "Build Api for JS")
+
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage of %s:\n", os.Args[0])
+		flag.PrintDefaults()
+	}
+	flag.Parse()
+
 	var api types.APIDefinitions
 	var objects []types.ObjectDefinition
 	tools.LogInit(os.Stdout, os.Stdout, os.Stdout, os.Stderr)
@@ -29,12 +48,28 @@ func main() {
 	api.Objects = make(map[string]types.ObjectDefinition)
 	api.Enums = make(map[string]types.ObjectDefinition)
 
-	var generator types.GeneratorInterface
-	generator, err = golang.NewGolangGenerator(new(types.Config))
-	if nil != err {
-		fmt.Println("Couldn't create Generator with error " + err.Error())
-		return
+	var generators []types.GeneratorInterface = make([]types.GeneratorInterface, 0, 2)
+
+	if bGolang{
+		generator, err := golang.NewGolangGenerator(new(types.Config))
+		if nil != err {
+			fmt.Println("Couldn't create Generator with error " + err.Error())
+			return
+		}
+		generators = generators[:len(generators) + 1]
+		generators[len(generators) - 1] = generator
 	}
+
+	if bJS{
+		generator, err := js.NewJSGenerator(new(types.Config))
+		if nil != err {
+			fmt.Println("Couldn't create Generator with error " + err.Error())
+			return
+		}
+		generators = generators[:len(generators) + 1]
+		generators[len(generators) - 1] = generator
+	}
+
 	for _, object := range objects {
 		switch object.Type {
 		case types.ObjectTypeObject:
@@ -73,22 +108,25 @@ func main() {
 			api.Enums[object.Name] = object
 		}
 	}
-	err = generator.GenerateObjects(&api)
-	if nil != err {
-		fmt.Println("Failed to generate Objects\n")
-		fmt.Println(err)
-		return
-	}
-	err = generator.GenerateCommands(&api)
-	if nil != err {
-		fmt.Println("Failed to generate Commands\n")
-		fmt.Println(err)
-		return
-	}
-	err = generator.GenerateEnums(&api)
-	if nil != err {
-		fmt.Println("Failed to generate Enums\n")
-		fmt.Println(err)
-		return
+	for _, generator := range generators{
+
+		err = generator.GenerateObjects(&api)
+		if nil != err {
+			fmt.Println("Failed to generate Objects\n")
+			fmt.Println(err)
+			return
+		}
+		err = generator.GenerateCommands(&api)
+		if nil != err {
+			fmt.Println("Failed to generate Commands\n")
+			fmt.Println(err)
+			return
+		}
+		err = generator.GenerateEnums(&api)
+		if nil != err {
+			fmt.Println("Failed to generate Enums\n")
+			fmt.Println(err)
+			return
+		}
 	}
 }
