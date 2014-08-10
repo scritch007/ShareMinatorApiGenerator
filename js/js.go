@@ -54,13 +54,13 @@ func (g *JSGenerator) generateCommand(o *types.ObjectDefinition) (err error) {
 	//	}
 	//}
 	//g.apiFile.WriteString(strings.Join(mandatoryInputs, ", "))
-	if nil != o.Input  && 0 != len(*o.Input){
+	if nil != o.Input && 0 != len(*o.Input) {
 		g.apiFile.WriteString("input, ")
 	}
 	g.apiFile.WriteString("config, onSuccess, onError, onPending){\n")
-	if nil != o.Input  && 0 != len(*o.Input){
+	if nil != o.Input && 0 != len(*o.Input) {
 		g.apiFile.WriteString("\t//TODO check that all the mandatory inputs are there\n")
-	}else{
+	} else {
 		g.apiFile.WriteString("\tvar input = null;\n")
 	}
 	g.apiFile.WriteString(fmt.Sprintf("\tsendCommand(\"%s\", input, config, onSuccess, onError, onPending);\n", o.Name))

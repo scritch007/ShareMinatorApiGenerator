@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"github.com/scritch007/ShareMinatorApiGenerator/golang"
 	"github.com/scritch007/ShareMinatorApiGenerator/js"
@@ -9,7 +10,6 @@ import (
 	"github.com/scritch007/go-tools"
 	"io/ioutil"
 	"os"
-	"flag"
 )
 
 func main() {
@@ -50,24 +50,24 @@ func main() {
 
 	var generators []types.GeneratorInterface = make([]types.GeneratorInterface, 0, 2)
 
-	if bGolang{
+	if bGolang {
 		generator, err := golang.NewGolangGenerator(new(types.Config))
 		if nil != err {
 			fmt.Println("Couldn't create Generator with error " + err.Error())
 			return
 		}
-		generators = generators[:len(generators) + 1]
-		generators[len(generators) - 1] = generator
+		generators = generators[:len(generators)+1]
+		generators[len(generators)-1] = generator
 	}
 
-	if bJS{
+	if bJS {
 		generator, err := js.NewJSGenerator(new(types.Config))
 		if nil != err {
 			fmt.Println("Couldn't create Generator with error " + err.Error())
 			return
 		}
-		generators = generators[:len(generators) + 1]
-		generators[len(generators) - 1] = generator
+		generators = generators[:len(generators)+1]
+		generators[len(generators)-1] = generator
 	}
 
 	for _, object := range objects {
@@ -108,7 +108,7 @@ func main() {
 			api.Enums[object.Name] = object
 		}
 	}
-	for _, generator := range generators{
+	for _, generator := range generators {
 
 		err = generator.GenerateObjects(&api)
 		if nil != err {
