@@ -94,7 +94,7 @@
 				"type": "string",
 				"comment": "this is the extension of the file. value will be folder for a folder"
 			},{
-				"name": "mime_type",
+				"name": "mimetype",
 				"type": "string",
 				"comment": "this is the mimetype of the file"
 			},{

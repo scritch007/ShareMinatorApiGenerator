@@ -5,8 +5,8 @@ type StorageItem struct {
 	IsDir       bool       `json:"isDir"`
 	MDate       int64      `json:"mDate"`
 	Size        int64      `json:"size"`
-	Kind        string     `json:"kind"`      // this is the extension of the file. value will be folder for a folder
-	MimeType    string     `json:"mime_type"` // this is the mimetype of the file
+	Kind        string     `json:"kind"`     // this is the extension of the file. value will be folder for a folder
+	Mimetype    string     `json:"mimetype"` // this is the mimetype of the file
 	Access      AccessType `json:"access"`
 	ShareAccess AccessType `json:"share_access"`
 }
