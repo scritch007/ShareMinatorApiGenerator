@@ -94,6 +94,10 @@
 				"type": "string",
 				"comment": "this is the extension of the file. value will be folder for a folder"
 			},{
+				"name": "mime_type",
+				"type": "string",
+				"comment": "this is the mimetype of the file"
+			},{
 				"name": "access",
 				"optional": false,
 				"type": "AccessType"
@@ -216,6 +220,27 @@
 			}
 		],
 		"output": []
+	},{
+		"type": "Command",
+		"name": "browser.thumbnail",
+		"input":[
+			{
+				"name": "path",
+				"type": "string"
+			},{
+				"name": "size",
+				"type": "int",
+				"comment": "size of desired picture",
+				"optional": true
+			}
+		],
+		"output":[
+			{
+				"name": "content",
+				"type": "string",
+				"comment": "base64 of the image"
+			}
+		]
 	},{
 		"name": "EnumShareLinkType",
 		"type": "Enum",

@@ -44,12 +44,24 @@ type CommandBrowserUploadFileInput struct {
 type CommandBrowserUploadFile struct {
 	Input CommandBrowserUploadFileInput `json:"input"`
 }
+type CommandBrowserThumbnailInput struct {
+	Path string `json:"path"`
+	Size *int   `json:"size,omitempty"` // size of desired picture
+}
+type CommandBrowserThumbnailOutput struct {
+	Content string `json:"content"` // base64 of the image
+}
+type CommandBrowserThumbnail struct {
+	Input  CommandBrowserThumbnailInput  `json:"input"`
+	Output CommandBrowserThumbnailOutput `json:"output"`
+}
 type BrowserCommand struct {
 	List         *CommandBrowserList         `json:"list,omitempty"`
 	CreateFolder *CommandBrowserCreateFolder `json:"create_folder,omitempty"`
 	Delete       *CommandBrowserDelete       `json:"delete,omitempty"`
 	DownloadLink *CommandBrowserDownloadLink `json:"download_link,omitempty"`
 	UploadFile   *CommandBrowserUploadFile   `json:"upload_file,omitempty"`
+	Thumbnail    *CommandBrowserThumbnail    `json:"thumbnail,omitempty"`
 }
 type CommandShareLinkListInput struct {
 	Path string `json:"path"`
@@ -101,6 +113,7 @@ const (
 	EnumBrowserDelete       EnumAction = "browser.delete"
 	EnumBrowserDownloadLink EnumAction = "browser.download_link"
 	EnumBrowserUploadFile   EnumAction = "browser.upload_file"
+	EnumBrowserThumbnail    EnumAction = "browser.thumbnail"
 	EnumShareLinkList       EnumAction = "share_link.list"
 	EnumShareLinkCreate     EnumAction = "share_link.create"
 	EnumShareLinkUpdate     EnumAction = "share_link.update"
