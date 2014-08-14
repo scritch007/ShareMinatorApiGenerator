@@ -145,6 +145,12 @@
 				"name": "path",
 				"optional": false,
 				"type": "string"
+			},
+			{
+				"name": "show_hidden_files",
+				"optional": true,
+				"type": "bool",
+				"comment": "By default hidden files are hidden"
 			}
 		],
 		"output": [

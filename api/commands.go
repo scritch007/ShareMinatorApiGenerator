@@ -1,7 +1,8 @@
 package api
 
 type CommandBrowserListInput struct {
-	Path string `json:"path"`
+	Path            string `json:"path"`
+	ShowHiddenFiles *bool  `json:"show_hidden_files,omitempty"` // By default hidden files are hidden
 }
 type CommandBrowserListOutput struct {
 	CurrentItem StorageItem   `json:"current_item"`
