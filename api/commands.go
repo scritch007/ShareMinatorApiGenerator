@@ -126,6 +126,7 @@ type Command struct {
 	CommandId string            `json:"command_id"`
 	Timeout   int64             `json:"timeout,omitempty"`
 	AuthKey   *string           `json:"auth_key,omitempty"` //Used when calling commands on behalf of a sharedlink
+	Password  *string           `json:"password"`           //Used when a share_link requires a password This should be the hash of AuthKey + Password
 	State     CommandStatus     `json:"state"`
 	Browser   *BrowserCommand   `json:"browser,omitempty"`
 	ShareLink *ShareLinkCommand `json:"share_link,omitempty"`

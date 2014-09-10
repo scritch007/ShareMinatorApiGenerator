@@ -296,6 +296,15 @@
 				"type": "AccessType",
 				"optional": true,
 				"comment": "What access would people coming with this link have"
+			},{
+				"name": "password",
+				"type": "string",
+				"optional": true
+			},{
+				"name": "nb_downloads",
+				"type": "int",
+				"optional": true,
+				"comment": "Number of downloads for a file. This is only valid for file shared, not directories"
 			}
 		]
 	},{
@@ -354,5 +363,105 @@
 			}
 		],
 		"output":[]
+	},{
+		"name": "get_info",
+		"type": "Request",
+		"methods": ["GET"],
+		"request_type": "config",
+		"input":[
+		],
+		"output":[
+			{
+				"name": "share_link",
+				"type": "bool"
+			},{
+				"name": "password_protected",
+				"type": "bool"
+			},{
+				"name": "nb_downloads",
+				"type": "int",
+				"comment": "Number of downloads left for this particular sharing",
+				"optional": true
+			},{
+				"name": "access",
+				"type": "AccessType",
+				"comment": "Kind of access user has on this repository"
+			},{
+				"name": "share_access",
+				"type": "AccessType",
+				"comment": "Kind of share access user has on this repository"
+			}
+		]
+	},{
+		"name": "Account",
+		"type": "Object",
+		"fields":[
+			{
+				"name": "login",
+				"type": "string"
+			},{
+				"name": "isAdmin",
+				"type": "bool"
+			},{
+				"name": "email",
+				"type": "string"
+			}
+		]
+	},{
+		"name": "get_users",
+		"type": "Request",
+		"methods": ["GET"],
+		"request_type": "config",
+		"query_params":["login", "email"],
+		"input":[
+		],
+		"output":[
+			{
+				"name": "users",
+				"type": "list",
+				"sub_type": "Account"
+			}
+		]
+	},{
+		"name": "dummy.auth",
+		"type": "Request",
+		"methods": ["POST"],
+		"request_type": "auth",
+		"input":[
+			{
+				"name": "login",
+				"type": "string"
+			},{
+				"name": "challeng_hash",
+				"type": "string"
+			},{
+				"name": "ref",
+				"type": "string"
+			}
+		],
+		"output":[
+			{
+				"name": "my_self",
+				"type": "Account"
+			},{
+				"name": "authentication_header",
+				"type": "string"
+			}
+		]
+	},{
+		"name": "dummy.get_challenge",
+		"type": "Request",
+		"methods": ["GET"],
+		"request_type": "auth",
+		"input": [],
+		"output": [
+			{
+				"name": "challenge",
+				"type": "string"
+			},{
+				"name": "ref",
+				"type": "string"
+			}
+		]
 	}
 ]

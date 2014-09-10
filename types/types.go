@@ -1,6 +1,7 @@
 package types
 
 import (
+	"encoding/json"
 	"errors"
 	"strings"
 )
@@ -11,6 +12,14 @@ const (
 	ObjectTypeEnum    EnumObjectType = "Enum"
 	ObjectTypeObject  EnumObjectType = "Object"
 	ObjectTypeCommand EnumObjectType = "Command"
+	ObjectTypeRequest EnumObjectType = "Request"
+)
+
+type EnumRequestType string
+
+const (
+	RequestTypeConfig EnumRequestType = "config"
+	RequestTypeAuth   EnumRequestType = "auth"
 )
 
 type ObjectField struct {
@@ -21,20 +30,47 @@ type ObjectField struct {
 	Comment  *string `json:"comment, omitempty"`
 }
 
+func (o *ObjectField) String() string {
+	res, err := json.Marshal(o)
+	if nil != err {
+		return "Failed to serialize object with error " + err.Error()
+	}
+	return string(res)
+}
+
 type EnumValue struct {
 	Name    string  `json:"name"`
 	Value   *int    `json:"value,omitempty"` //The value can be omitted in that case we should be in a iota mode
 	Comment *string `json:"comment, omitempty"`
 }
 
+func (o *EnumValue) String() string {
+	res, err := json.Marshal(o)
+	if nil != err {
+		return "Failed to serialize object with error " + err.Error()
+	}
+	return string(res)
+}
+
 type ObjectDefinition struct {
-	Name    string         `json:"name"`
-	Type    EnumObjectType `json:"type"`
-	Fields  *[]ObjectField `json:"fields,omitempty"`
-	Input   *[]ObjectField `json:"input,omitempty"`
-	Output  *[]ObjectField `json:"output,omitempty"`
-	Values  *[]EnumValue   `json:"values, omitempty"`
-	Comment *string        `json:"comment, omitempty"`
+	Name        string           `json:"name"`
+	Type        EnumObjectType   `json:"type"`
+	Methods     *[]string        `json:\"methods\"`
+	QueryParams *[]string        `json:\"query_params\"`
+	Fields      *[]ObjectField   `json:"fields,omitempty"`
+	Input       *[]ObjectField   `json:"input,omitempty"`
+	Output      *[]ObjectField   `json:"output,omitempty"`
+	Values      *[]EnumValue     `json:"values, omitempty"`
+	Comment     *string          `json:"comment, omitempty"`
+	RequestType *EnumRequestType `json:"request_type,omitempty"` //Should be set when type is Request
+}
+
+func (o *ObjectDefinition) String() string {
+	res, err := json.Marshal(o)
+	if nil != err {
+		return "Failed to serialize object with error " + err.Error()
+	}
+	return string(res)
 }
 
 func (o *ObjectDefinition) CommandSplit() (category string, action string, err error) {
@@ -43,6 +79,18 @@ func (o *ObjectDefinition) CommandSplit() (category string, action string, err e
 	}
 	split := strings.Split(o.Name, ".")
 	return split[0], split[1], nil
+}
+
+func (o *ObjectDefinition) RequestSplit() (string, error) {
+	split := strings.Split(o.Name, ".")
+	if 2 == len(split) {
+		return split[1], nil
+	} else if 1 == len(split) {
+		return split[0], nil
+	} else {
+		return "", errors.New("This is not correct split " + o.Name)
+	}
+
 }
 
 func (o *ObjectDefinition) Dependencies() (deps []string, err error) {
@@ -105,12 +153,14 @@ type GeneratorInterface interface {
 	GenerateObjects(a *APIDefinitions) error
 	GenerateCommands(a *APIDefinitions) error
 	GenerateEnums(a *APIDefinitions) error
+	GenerateRequests(a *APIDefinitions) error
 }
 
 type APIDefinitions struct {
 	Objects  map[string]ObjectDefinition
 	Commands map[string]*[]ObjectDefinition
 	Enums    map[string]ObjectDefinition
+	Requests map[string]ObjectDefinition
 }
 
 type Config struct{}

@@ -47,6 +47,7 @@ func main() {
 	api.Commands = make(map[string]*[]types.ObjectDefinition)
 	api.Objects = make(map[string]types.ObjectDefinition)
 	api.Enums = make(map[string]types.ObjectDefinition)
+	api.Requests = make(map[string]types.ObjectDefinition)
 
 	var generators []types.GeneratorInterface = make([]types.GeneratorInterface, 0, 2)
 
@@ -106,7 +107,30 @@ func main() {
 				return
 			}
 			api.Enums[object.Name] = object
+		case types.ObjectTypeRequest:
+			if nil == object.Methods {
+				fmt.Println("Requests " + object.Name + " has no methods")
+				return
+			}
+			if nil == object.Input {
+				fmt.Println("Requests " + object.Name + " has no input definition")
+				return
+			}
+			if nil == object.Output {
+				fmt.Println("Requests " + object.Name + " has no output definition")
+				return
+			}
+			_, err := object.RequestSplit()
+			if nil != err {
+				fmt.Println("Requests " + object.Name + " couldn't be splitted")
+				return
+			}
+			api.Requests[object.Name] = object
+		default:
+			fmt.Println("Unknown type ", object.Type)
+			return
 		}
+
 	}
 	for _, generator := range generators {
 
@@ -125,6 +149,12 @@ func main() {
 		err = generator.GenerateEnums(&api)
 		if nil != err {
 			fmt.Println("Failed to generate Enums\n")
+			fmt.Println(err)
+			return
+		}
+		err = generator.GenerateRequests(&api)
+		if nil != err {
+			fmt.Println("Failed to generate RestApis\n")
 			fmt.Println(err)
 			return
 		}

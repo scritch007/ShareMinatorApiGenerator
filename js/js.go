@@ -126,3 +126,8 @@ func (g *JSGenerator) GenerateEnums(a *types.APIDefinitions) error {
 	}
 	return nil
 }
+
+func (g *JSGenerator) GenerateRequests(a *types.APIDefinitions) error {
+
+	return nil
+}

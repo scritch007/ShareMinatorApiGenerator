@@ -13,6 +13,7 @@ type GolangGenerator struct {
 	commandFile *os.File
 	objectFile  *os.File
 	enumFile    *os.File
+	requestFile *os.File
 }
 
 func NewGolangGenerator(config *types.Config) (*GolangGenerator, error) {
@@ -34,13 +35,22 @@ func NewGolangGenerator(config *types.Config) (*GolangGenerator, error) {
 	eF, err := os.OpenFile("api/enum.go", os.O_WRONLY|os.O_TRUNC|os.O_CREATE, os.ModePerm)
 	if nil != err {
 		cF.Close()
-		eF.Close()
+		oF.Close()
 		return nil, err
 	}
 	eF.WriteString("package api\n")
+	rF, err := os.OpenFile("api/request.go", os.O_WRONLY|os.O_TRUNC|os.O_CREATE, os.ModePerm)
+	if nil != err {
+		cF.Close()
+		oF.Close()
+		eF.Close()
+		return nil, err
+	}
+	rF.WriteString("package api\n")
 	g.commandFile = cF
 	g.objectFile = oF
 	g.enumFile = eF
+	g.requestFile = rF
 	return g, nil
 }
 
@@ -182,6 +192,7 @@ func (g *GolangGenerator) GenerateCommands(a *types.APIDefinitions) error {
 	g.commandFile.WriteString("\tCommandId string `json:\"command_id\"`\n")
 	g.commandFile.WriteString("\tTimeout int64 `json:\"timeout,omitempty\"`\n")
 	g.commandFile.WriteString("\tAuthKey *string `json:\"auth_key,omitempty\"` //Used when calling commands on behalf of a sharedlink\n")
+	g.commandFile.WriteString("\tPassword *string `json:\"password\"` //Used when a share_link requires a password This should be the hash of AuthKey + Password\n")
 	g.commandFile.WriteString("\tState CommandStatus `json:\"state\"`\n")
 	for category, _ := range a.Commands {
 		g.commandFile.WriteString(fmt.Sprintf("\t%s *%sCommand `json:\"%s,omitempty\"`\n", tools.JsonToGolang(&category), tools.JsonToGolang(&category), category))
@@ -192,6 +203,45 @@ func (g *GolangGenerator) GenerateCommands(a *types.APIDefinitions) error {
 func (g *GolangGenerator) GenerateEnums(a *types.APIDefinitions) error {
 	for _, o := range a.Enums {
 		err := g.generateEnum(&o)
+		if nil != err {
+			return err
+		}
+	}
+	return nil
+}
+
+func getRequestName(commandName *string) (out string) {
+	res := strings.Split(*commandName, ".")
+	out = "Request"
+	for _, s := range res {
+		out += tools.Capitalize(s)
+	}
+	return tools.JsonToGolang(&out)
+}
+
+func (g *GolangGenerator) generateRequest(o *types.ObjectDefinition) (err error) {
+	cname := getCommandName(&o.Name)
+
+	if 0 != len(*o.Input) {
+		err = generateObject(g.requestFile, cname+"Input", o.Input)
+		if nil != err {
+			return err
+		}
+
+	}
+	if 0 != len(*o.Output) {
+		err = generateObject(g.requestFile, cname+"Output", o.Output)
+		if nil != err {
+			return err
+		}
+
+	}
+	return nil
+}
+
+func (g *GolangGenerator) GenerateRequests(a *types.APIDefinitions) error {
+	for _, o := range a.Requests {
+		err := g.generateRequest(&o)
 		if nil != err {
 			return err
 		}
