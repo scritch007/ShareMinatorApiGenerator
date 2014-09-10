@@ -115,10 +115,10 @@ func (g *GolangGenerator) generateCommand(o *types.ObjectDefinition) (err error)
 
 	g.commandFile.WriteString(fmt.Sprintf("type %s struct{\n", cname))
 	if 0 != len(*o.Input) {
-		g.commandFile.WriteString(fmt.Sprintf("\tInput %sInput `json:\"input\"`\n", cname))
+		g.commandFile.WriteString(fmt.Sprintf("\tInput %sInput `json:\"input\" bson:\"input\"` \n", cname))
 	}
 	if 0 != len(*o.Output) {
-		g.commandFile.WriteString(fmt.Sprintf("\tOutput %sOutput `json:\"output\"`\n", cname))
+		g.commandFile.WriteString(fmt.Sprintf("\tOutput %sOutput `json:\"output\" bson:\"output\"`\n", cname))
 	}
 	g.commandFile.WriteString("}\n")
 	return nil
@@ -174,7 +174,7 @@ func (g *GolangGenerator) GenerateCommands(a *types.APIDefinitions) error {
 			if nil != err {
 				return err
 			}
-			g.commandFile.WriteString(fmt.Sprintf("\t%s *%s `json:\"%s,omitempty\"`\n", tools.JsonToGolang(&action), getCommandName(&o.Name), action))
+			g.commandFile.WriteString(fmt.Sprintf("\t%s *%s `json:\"%s,omitempty\" bson:\"%s,omitempty\"` \n", tools.JsonToGolang(&action), getCommandName(&o.Name), action, action))
 		}
 		g.commandFile.WriteString("}\n")
 	}
