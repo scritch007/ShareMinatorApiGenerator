@@ -1,47 +1,5 @@
 package api
 
-type CommandShareLinkListInput struct {
-	Path string `json:"path"`
-}
-type CommandShareLinkListOutput struct {
-	ShareLinks []ShareLink `json:"share_links"`
-}
-type CommandShareLinkList struct {
-	Input  CommandShareLinkListInput  `json:"input" bson:"input"`
-	Output CommandShareLinkListOutput `json:"output" bson:"output"`
-}
-type CommandShareLinkCreateInput struct {
-	ShareLink ShareLink `json:"share_link"`
-}
-type CommandShareLinkCreateOutput struct {
-	ShareLink ShareLink `json:"share_link"`
-}
-type CommandShareLinkCreate struct {
-	Input  CommandShareLinkCreateInput  `json:"input" bson:"input"`
-	Output CommandShareLinkCreateOutput `json:"output" bson:"output"`
-}
-type CommandShareLinkUpdateInput struct {
-	ShareLink ShareLink `json:"share_link"`
-}
-type CommandShareLinkUpdateOutput struct {
-	ShareLink ShareLink `json:"share_link"`
-}
-type CommandShareLinkUpdate struct {
-	Input  CommandShareLinkUpdateInput  `json:"input" bson:"input"`
-	Output CommandShareLinkUpdateOutput `json:"output" bson:"output"`
-}
-type CommandShareLinkDeleteInput struct {
-	Key string `json:"key"`
-}
-type CommandShareLinkDelete struct {
-	Input CommandShareLinkDeleteInput `json:"input" bson:"input"`
-}
-type ShareLinkCommand struct {
-	List   *CommandShareLinkList   `json:"list,omitempty" bson:"list,omitempty"`
-	Create *CommandShareLinkCreate `json:"create,omitempty" bson:"create,omitempty"`
-	Update *CommandShareLinkUpdate `json:"update,omitempty" bson:"update,omitempty"`
-	Delete *CommandShareLinkDelete `json:"delete,omitempty" bson:"delete,omitempty"`
-}
 type CommandBrowserListInput struct {
 	Path            string `json:"path"`
 	ShowHiddenFiles *bool  `json:"show_hidden_files,omitempty"` // By default hidden files are hidden
@@ -105,6 +63,48 @@ type BrowserCommand struct {
 	DownloadLink *CommandBrowserDownloadLink `json:"download_link,omitempty" bson:"download_link,omitempty"`
 	UploadFile   *CommandBrowserUploadFile   `json:"upload_file,omitempty" bson:"upload_file,omitempty"`
 	Thumbnail    *CommandBrowserThumbnail    `json:"thumbnail,omitempty" bson:"thumbnail,omitempty"`
+}
+type CommandShareLinkListInput struct {
+	Path string `json:"path"`
+}
+type CommandShareLinkListOutput struct {
+	ShareLinks []ShareLink `json:"share_links"`
+}
+type CommandShareLinkList struct {
+	Input  CommandShareLinkListInput  `json:"input" bson:"input"`
+	Output CommandShareLinkListOutput `json:"output" bson:"output"`
+}
+type CommandShareLinkCreateInput struct {
+	ShareLink ShareLink `json:"share_link"`
+}
+type CommandShareLinkCreateOutput struct {
+	ShareLink ShareLink `json:"share_link"`
+}
+type CommandShareLinkCreate struct {
+	Input  CommandShareLinkCreateInput  `json:"input" bson:"input"`
+	Output CommandShareLinkCreateOutput `json:"output" bson:"output"`
+}
+type CommandShareLinkUpdateInput struct {
+	ShareLink ShareLink `json:"share_link"`
+}
+type CommandShareLinkUpdateOutput struct {
+	ShareLink ShareLink `json:"share_link"`
+}
+type CommandShareLinkUpdate struct {
+	Input  CommandShareLinkUpdateInput  `json:"input" bson:"input"`
+	Output CommandShareLinkUpdateOutput `json:"output" bson:"output"`
+}
+type CommandShareLinkDeleteInput struct {
+	Key string `json:"key"`
+}
+type CommandShareLinkDelete struct {
+	Input CommandShareLinkDeleteInput `json:"input" bson:"input"`
+}
+type ShareLinkCommand struct {
+	List   *CommandShareLinkList   `json:"list,omitempty" bson:"list,omitempty"`
+	Create *CommandShareLinkCreate `json:"create,omitempty" bson:"create,omitempty"`
+	Update *CommandShareLinkUpdate `json:"update,omitempty" bson:"update,omitempty"`
+	Delete *CommandShareLinkDelete `json:"delete,omitempty" bson:"delete,omitempty"`
 }
 type EnumAction string
 

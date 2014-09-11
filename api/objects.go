@@ -32,4 +32,5 @@ type Account struct {
 	Login   string `json:"login"`
 	IsAdmin bool   `json:"isAdmin"`
 	Email   string `json:"email"`
+	Id      string `json:"id"`
 }

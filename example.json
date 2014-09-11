@@ -405,6 +405,9 @@
 			},{
 				"name": "email",
 				"type": "string"
+			},{
+				"name": "id",
+				"type": "string"
 			}
 		]
 	},{
