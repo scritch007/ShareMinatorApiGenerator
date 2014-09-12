@@ -220,7 +220,16 @@ func getRequestName(commandName *string) (out string) {
 }
 
 func (g *GolangGenerator) generateRequest(o *types.ObjectDefinition) (err error) {
-	cname := getCommandName(&o.Name)
+	cname := getRequestName(&o.Name)
+
+	var prefix string
+	if types.RequestTypeAuth == *o.RequestType {
+		prefix = "auths"
+	} else {
+		prefix = "config"
+	}
+
+	g.requestFile.WriteString("var " + cname + "Url" + "= \"" + prefix + "/" + o.Name + "\"\n")
 
 	if 0 != len(*o.Input) {
 		err = generateObject(g.requestFile, cname+"Input", o.Input)

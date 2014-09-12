@@ -127,7 +127,19 @@ func (g *JSGenerator) GenerateEnums(a *types.APIDefinitions) error {
 	return nil
 }
 
-func (g *JSGenerator) GenerateRequests(a *types.APIDefinitions) error {
+func getRequestName(commandName *string) (out string) {
+	res := strings.Split(*commandName, ".")
+	out = "Request"
+	for _, s := range res {
+		out += tools.Capitalize(s)
+	}
+	return tools.JsonToGolang(&out)
+}
 
+func (g *JSGenerator) GenerateRequests(a *types.APIDefinitions) error {
+	g.apiFile.WriteString("var RequestsUrl = function(){};\n")
+	for _, o := range a.Requests {
+		g.apiFile.WriteString("RequestsUrl." + getRequestName(&o.Name) + " = \"auths/" + o.Name + "\";\n")
+	}
 	return nil
 }

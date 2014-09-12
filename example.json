@@ -435,7 +435,7 @@
 				"name": "login",
 				"type": "string"
 			},{
-				"name": "challeng_hash",
+				"name": "challenge_hash",
 				"type": "string"
 			},{
 				"name": "ref",
@@ -464,6 +464,49 @@
 			},{
 				"name": "ref",
 				"type": "string"
+			}
+		]
+	},{
+		"name": "dummy.create",
+		"type": "Request",
+		"methods": ["POST"],
+		"request_type": "auth",
+		"input": [
+			{
+				"name": "login",
+				"type": "string"
+			},{
+				"name": "password",
+				"type": "string"
+			},{
+				"name": "email",
+				"type": "string"
+			},{
+				"name": "is_admin",
+				"type": "bool",
+				"optional": true
+			}
+		],
+		"output":[
+		]
+	},{
+		"name": "logout",
+		"type": "Request",
+		"methods": ["POST"],
+		"request_type": "auth",
+		"input":[],
+		"output":[]
+	},{
+		"name": "list",
+		"type": "Request",
+		"methods": ["GET"],
+		"request_type": "auth",
+		"input": [],
+		"output": [
+			{
+				"name": "auths",
+				"type": "list",
+				"sub_type": "string"
 			}
 		]
 	}
