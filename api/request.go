@@ -1,15 +1,5 @@
 package api
 
-var RequestGetInfoUrl = "config/get_info"
-
-type RequestGetInfoOutput struct {
-	ShareLink         bool       `json:"share_link"`
-	PasswordProtected bool       `json:"password_protected"`
-	NbDownloads       *int       `json:"nb_downloads,omitempty"` // Number of downloads left for this particular sharing
-	Access            AccessType `json:"access"`                 // Kind of access user has on this repository
-	ShareAccess       AccessType `json:"share_access"`           // Kind of share access user has on this repository
-}
-
 var RequestGetUsersUrl = "config/get_users"
 
 type RequestGetUsersOutput struct {
@@ -49,4 +39,14 @@ var RequestListUrl = "auths/list"
 
 type RequestListOutput struct {
 	Auths []string `json:"auths"`
+}
+
+var RequestGetInfoUrl = "config/get_info"
+
+type RequestGetInfoOutput struct {
+	ShareLink         bool       `json:"share_link"`
+	PasswordProtected bool       `json:"password_protected"`
+	NbDownloads       *int       `json:"nb_downloads,omitempty"` // Number of downloads left for this particular sharing
+	Access            AccessType `json:"access"`                 // Kind of access user has on this repository
+	ShareAccess       AccessType `json:"share_access"`           // Kind of share access user has on this repository
 }

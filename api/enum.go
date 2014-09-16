@@ -1,5 +1,14 @@
 package api
 
+type EnumShareLinkType int
+
+const (
+	EnumShareByKey            EnumShareLinkType = 0
+	EnumRestricted            EnumShareLinkType = 1
+	EnumAuthenticated         EnumShareLinkType = 2
+	EnumShareByKeyAndPassword EnumShareLinkType = 3
+)
+
 type AccessType int
 
 const (
@@ -30,12 +39,4 @@ const (
 	ERROR_FILE_SYSTEM          EnumCommandErrorCode = 6
 	ERROR_SAVING               EnumCommandErrorCode = 7
 	ERROR_UNKNOWN              EnumCommandErrorCode = 8
-)
-
-type EnumShareLinkType int
-
-const (
-	EnumShareByKey    EnumShareLinkType = 0
-	EnumRestricted    EnumShareLinkType = 1
-	EnumAuthenticated EnumShareLinkType = 2
 )

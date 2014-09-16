@@ -260,6 +260,9 @@
 			},{
 				"name": "EnumAuthenticated",
 				"value": 2
+			},{
+				"name": "EnumShareByKeyAndPassword",
+				"value": 3
 			}
 		]
 	},{
