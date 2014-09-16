@@ -393,6 +393,10 @@
 				"name": "share_access",
 				"type": "AccessType",
 				"comment": "Kind of share access user has on this repository"
+			},{
+				"name": "type",
+				"type": "EnumShareLinkType",
+				"comment": "AcessType: authenfied, resticted, password... "
 			}
 		]
 	},{
